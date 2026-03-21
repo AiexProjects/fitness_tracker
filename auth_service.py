@@ -4,7 +4,11 @@ import binascii
 import hmac
 import logging
 
+logging.basicConfig(level=logging.INFO, filename='log.log', filemode='w', #keep it write for now
+                    format="%(asctime)s - %(levelname)s - %(message)s")
+
 class AuthService:
+    @staticmethod
     def hash_password(password):
         salt = os.urandom(16)
         iterations = 1000000
@@ -17,10 +21,11 @@ class AuthService:
     
         return f"pbkdf2_sha256${iterations}${salt_hex}${hashed_password}"
     
+    @staticmethod
     def verify_password(password_data, provided_password):
         try:
             data_contents = password_data.split('$')
-            if data_contents[0] != "pdkdf2_sha256":
+            if data_contents[0] != "pbkdf2_sha256":
                 raise ValueError("Unsupported hash algorithm")
             
             interations = int(data_contents[1])
@@ -34,7 +39,8 @@ class AuthService:
 
         except Exception as e:
             print(f"Error during password verification: {e}")
-            logging.info(f"Error during password verification: {e}")
+            logging.error(f"Verification Failiure: {e}")
+
             return False
 
 
@@ -42,3 +48,11 @@ class AuthService:
 user_password = input("Password: ")
 password_hash = AuthService.hash_password(user_password)
 print(password_hash)
+
+verification_password = input("Verify Password: ")
+verification = AuthService.verify_password(password_hash, verification_password)
+
+if verification:
+    print("Password match! Login successful.")
+else:
+    print("Incorrect password. Login failed.")
