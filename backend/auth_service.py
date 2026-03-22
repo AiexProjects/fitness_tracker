@@ -7,7 +7,7 @@ import logging
 logging.basicConfig(level=logging.INFO, filename='log.log', filemode='w', #keep it write for now
                     format="%(asctime)s - %(levelname)s - %(message)s")
 
-class AuthService:
+class AuthService: #might change to argon2id (hybrid) or argon2i (frontend password hashing)
     @staticmethod
     def hash_password(password):
         salt = os.urandom(16)
@@ -56,3 +56,19 @@ if verification:
     print("Password match! Login successful.")
 else:
     print("Incorrect password. Login failed.")
+
+
+"""
+What I've learnt so far,
+- use of salt and iteration when hashing sensitive data to add uniquness and slow down any bruteforcing.
+- different hashing algorithms, deciding to use pbkdf2-sha256, as it showcase understanding of salt and iterations,
+  also using sha256 instead of sha512 as sha512 is more targeted towards 64-bit device and we want to use this for mobile devices
+- different ways our auth service can be attacked, what algorithm to defend against it(pbkdf2-sha256 is cpu focused and susceptible to gpu based attack).
+- use of os.urandom() to generate a random 16byte salt, learning difference between prng, csprng, trng
+  basic understanding of how csprng is generated (use of entropy pool - what entropy pool is made up of)
+- basic error logging for better error analysis
+- learned that using logging.exception() is bad for our case as it provides the user with too much info about the error,
+  which can be malliciously used.
+- generating a fixed length hash to prevent timing attack,
+  use of cryptography secure comparison function rathar than simple == when comparing hash
+"""
