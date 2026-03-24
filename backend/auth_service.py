@@ -4,8 +4,10 @@ import binascii
 import hmac
 import logging
 
-logging.basicConfig(level=logging.INFO, filename='log.log', filemode='w', #keep it write for now
-                    format="%(asctime)s - %(levelname)s - %(message)s")
+from database import DatabaseManager
+
+logging.basicConfig(level=logging.INFO, filename='log.log', filemode='a',
+                    format="%(asctime)s - %(filename)s - %(levelname)s - %(message)s")
 
 class AuthService: #might change to argon2id (hybrid) or argon2i (frontend password hashing)
     @staticmethod
@@ -45,17 +47,45 @@ class AuthService: #might change to argon2id (hybrid) or argon2i (frontend passw
 
 
 #bum code
-user_password = input("Password: ")
-password_hash = AuthService.hash_password(user_password)
-print(password_hash)
+def signup():
+    username = input("Username: ")
+    user_password = input("Password: ")
+    password_hash = AuthService.hash_password(user_password)
 
-verification_password = input("Verify Password: ")
-verification = AuthService.verify_password(password_hash, verification_password)
+    if DatabaseManager.add_user(username, password_hash) == True:
+        print("User registered")
+        login()
+    else:
+        print("invalid username or password")
+    
 
-if verification:
-    print("Password match! Login successful.")
-else:
-    print("Incorrect password. Login failed.")
+def login():
+    username = input("Username: ")
+    verification_password = input("Password: ")
+
+    stored_password_data = DatabaseManager.get_password_data(username)
+    verification = AuthService.verify_password(stored_password_data, verification_password)
+
+    if verification:
+        print("Password match! Login successful.")
+    else:
+        print("Incorrect password. Login failed.")
+
+signup()
+
+
+
+#user_password = input("Password: ")
+#password_hash = AuthService.hash_password(user_password)
+#print(password_hash)
+
+#verification_password = input("Verify Password: ")
+#verification = AuthService.verify_password(password_hash, verification_password)
+
+#if verification:
+    #print("Password match! Login successful.")
+#else:
+    #print("Incorrect password. Login failed.")
 
 
 """
