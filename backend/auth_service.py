@@ -54,13 +54,6 @@ class AuthService: #might change to argon2id (hybrid) or argon2i (frontend passw
             logging.error(f"User Creation Failiure: {e}")
 
 
-"""
-Need to
-- change the auth_service_db table to store password_data and unique_user_id not username
-- seperate table created before that stores username and matching unique_user_id
-- all login attempt pulls user_id matching to username first, 
-"""
-
 
 
 """

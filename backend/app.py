@@ -1,16 +1,19 @@
 from fastapi import FastAPI
 from auth_service import AuthService
 from database import DatabaseManager
+from music_service import MusicService
 
 db_tool = DatabaseManager("fitness_tracker.db")
 auth_tool = AuthService()
+music_tool = MusicService()
 
 class connection_service:
-    def __init__(self, username, password, db, auth):
+    def __init__(self, username, password, db, auth, music):
         self.username = username
         self.password = password
         self.db = db
         self.auth = auth
+        self.music = music
 
     def signup(self): #if add_user fails, don't assign_user_id, if username exists, go to signin function
         unique_user_id = AuthService.create_new_user_id()
