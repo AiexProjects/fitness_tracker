@@ -1,13 +1,16 @@
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import logging
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 logging.basicConfig(level=logging.INFO, filename='log.log', filemode='a',
                     format="%(asctime)s - %(filename)s - %(levelname)s - %(message)s")
 
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="0e97f80b5b604237945e8b621f5b988e",
-                                               client_secret="cb245b047475473293c152f40b6ffbc6",
-                                               redirect_uri="https://localhost:3000",
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=os.getenv("SPOTIFY_CLIENT_ID"),
+                                               client_secret=os.getenv("SPOTIFY_CLIENT_SECRET"),
+                                               redirect_uri=os.getenv("SPOTIFY_REDIRECT_URI"),
                                                scope="user-library-read"))
 
 class MusicService:
