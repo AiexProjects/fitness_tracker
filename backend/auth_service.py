@@ -3,8 +3,7 @@ import os
 import binascii
 import hmac
 import logging
-
-from database import DatabaseManager
+import uuid
 
 logging.basicConfig(level=logging.INFO, filename='log.log', filemode='a',
                     format="%(asctime)s - %(filename)s - %(levelname)s - %(message)s")
@@ -44,48 +43,24 @@ class AuthService: #might change to argon2id (hybrid) or argon2i (frontend passw
             logging.error(f"Verification Failiure: {e}")
 
             return False
-
-
-#bum code
-def signup():
-    username = input("Username: ")
-    user_password = input("Password: ")
-    password_hash = AuthService.hash_password(user_password)
-
-    if DatabaseManager.add_user(username, password_hash) == True:
-        print("User registered")
-        login()
-    else:
-        print("invalid username or password")
     
+    @staticmethod
+    def create_new_user_id():
+        try:
+            unique_user_id = str(uuid.uuid4())
 
-def login():
-    username = input("Username: ")
-    verification_password = input("Password: ")
-
-    stored_password_data = DatabaseManager.get_password_data(username)
-    verification = AuthService.verify_password(stored_password_data, verification_password)
-
-    if verification:
-        print("Password match! Login successful.")
-    else:
-        print("Incorrect password. Login failed.")
-
-signup()
+            return unique_user_id
+        except Exception as e:
+            logging.error(f"User Creation Failiure: {e}")
 
 
+"""
+Need to
+- change the auth_service_db table to store password_data and unique_user_id not username
+- seperate table created before that stores username and matching unique_user_id
+- all login attempt pulls user_id matching to username first, 
+"""
 
-#user_password = input("Password: ")
-#password_hash = AuthService.hash_password(user_password)
-#print(password_hash)
-
-#verification_password = input("Verify Password: ")
-#verification = AuthService.verify_password(password_hash, verification_password)
-
-#if verification:
-    #print("Password match! Login successful.")
-#else:
-    #print("Incorrect password. Login failed.")
 
 
 """
