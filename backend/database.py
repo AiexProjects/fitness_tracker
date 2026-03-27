@@ -60,7 +60,7 @@ class DatabaseManager:
                 conn.commit()
                 return True
         except sqlite3.IntegrityError:
-            logging.info(f"UserID assignment Failed: Username: {username} already exists")
+            logging.debug(f"UserID assignment Failed: Username: {username} already exists")
             return False
         except sqlite3.Error as e:
             logging.error(f"Database Insert Error: {e}")
@@ -105,7 +105,7 @@ class DatabaseManager:
 
                     return user_id
                 else:
-                    logging.info(f"Sign-in attempt failed: Username: {username} doesn't exist")
+                    logging.debug(f"Sign-in attempt failed: Username: {username} doesn't exist")
                     return None
         except sqlite3.Error as e:
             logging.error(f"Database Retrieve Error: {e}")
