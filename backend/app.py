@@ -3,9 +3,22 @@ from auth_service import AuthService
 from database import DatabaseManager
 from music_service import MusicService
 
+#testing spotify music tracking
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+import os
+from dotenv import load_dotenv
+
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=os.getenv("SPOTIFY_CLIENT_ID"),
+                                               client_secret=os.getenv("SPOTIFY_CLIENT_SECRET"),
+                                               redirect_uri=os.getenv("SPOTIFY_REDIRECT_URI"),
+                                               scope="user-read-currently-playing"))
+
+
+
 db_tool = DatabaseManager("fitness_tracker.db")
 auth_tool = AuthService()
-music_tool = MusicService()
+music_tool = MusicService(sp)
 
 class connection_service:
     def __init__(self, username, password, db, auth, music):
@@ -38,12 +51,18 @@ class connection_service:
         else:
             print("Sign-in failed") #testing
 
+    def get_music_test(self):
+        current_track_test = self.music.get_music_data()
+        print(current_track_test)
+
 
 
 test_username = input("Username: ")
 test_password = input("Password: ")
 
-test_connection = connection_service(test_username, test_password, db_tool, auth_tool)
+test_connection = connection_service(test_username, test_password, db_tool, auth_tool, music_tool)
 
-# 2. Call the method on that specific instance
-test_connection.signup()
+#test_connection.signup()
+test_connection.get_music_test()
+
+#need to make ti so every user has to connect their spotify, rn when one connected, others just use that spotify account data.

@@ -8,11 +8,6 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, filename='log.log', filemode='a',
                     format="%(asctime)s - %(filename)s - %(levelname)s - %(message)s")
 
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=os.getenv("SPOTIFY_CLIENT_ID"),
-                                               client_secret=os.getenv("SPOTIFY_CLIENT_SECRET"),
-                                               redirect_uri=os.getenv("SPOTIFY_REDIRECT_URI"),
-                                               scope="user-library-read"))
-
 class MusicService:
     def __init__(self, sp):
         self.sp = sp
@@ -23,19 +18,20 @@ class MusicService:
 
             if current_track is not None and current_track['is_playing']:
                 current_track_name = current_track['item']['name']
-                current_track_artist = current_track['item']['artist']['name']
+                current_track_artist = current_track['item']['artists'][0]['name']
                 current_track_album = current_track['item']['album']['name']
 
-                current_track_artist_id = current_track['item']['artist']['id']
-                current_artist = self.sp.artist(current_track_artist_id)
-                current_track_genre = current_artist.get('genre', []) #this can return multiple genre btw, its any genre the artist is associated with.
+                #spotify got rid of genres - weird behaviour ngl, gatekeeping genres.
 
-                return f"{current_track_name}${current_track_artist}${current_track_album}${current_track_genre}"
+                #current_track_artist_id = current_track['item']['artists'][0]['id']
+                #current_artist = self.sp.artist(current_track_artist_id)
+                #current_track_genre = current_artist.get('genres', []) #this can return multiple genre btw, its any genre the artist is associated with.
+
+                return f"{current_track_name}${current_track_artist}${current_track_album}"
             
+            print("Spotify connected, but no active track found.")
             return None
         except Exception as e:
             logging.error(f"Spotipy API Error: {e}")
             return None
         
-        
-
